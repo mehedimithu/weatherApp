@@ -13,7 +13,7 @@ class Network {
     };
 
     final uri = Uri.https(
-        'api.openweathermap.org', '/data/2.5/forecast/daily?', queryParameters);
+        'api.openweathermap.org', '/data/2.5/forecast?', queryParameters);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       print("Weather data: ${response.body}");
