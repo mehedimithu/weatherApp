@@ -9,7 +9,7 @@ class Network {
     final queryParameters = {
       'lat': lat.toString(),
       'lon': lon.toString(),
-      'exclude': 'hourly',
+      'exclude': 'daily',
       'appid': '032dbc88c111154959aaffb1a0103112',
       'units': 'imperial'
     };
