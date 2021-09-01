@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/forecast/model/forecast_model.dart';
+import 'package:weather_app/forecast/model/network/network.dart';
 import 'package:weather_app/models/model.dart';
 import 'package:weather_app/services/getWeather.dart';
 
@@ -8,10 +10,23 @@ class CurrentWeatherPage extends StatefulWidget {
 }
 
 class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
-  final TextEditingController _wer = TextEditingController();
+  final TextEditingController _mes = TextEditingController();
   final _dataService = DataService();
 
   WeatherResponse? _response;
+  Future<ForecastModel?>? _forecast;
+
+  double lat = 23.7104;
+  double lon = 90.4074;
+
+  @override
+  void initState() {
+    super.initState();
+    _forecast = Network().getForecast(lat, lon);
+    _forecast!.then((weather) => print(weather!.daily));
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +61,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
               width: MediaQuery.of(context).size.width,
               child: TextField(
                 textAlign: TextAlign.start,
-                controller: _wer,
+                controller: _mes,
                 decoration: InputDecoration(
                   filled: true,
                   border: InputBorder.none,
@@ -80,7 +95,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   }
 
   void _search() async {
-    final response = await _dataService.getCurrentWeather(_wer.text);
+    final response = await _dataService.getCurrentWeather(_mes.text);
     setState(() => _response = response);
   }
 }
