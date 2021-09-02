@@ -1,3 +1,6 @@
+import 'dart:core';
+import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:weather_app/forecast/model/forecast_model.dart';
 import 'package:weather_app/forecast/model/weather_model.dart';
@@ -73,30 +76,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                       future: _response,
                       builder: (context, snapshat) {
                         if (snapshat.hasData) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Image.network(snapshat.data!.iconUrl,
-                                  fit: BoxFit.cover),
-                              Text(
-                                '${snapshat.data!.name!.toUpperCase()}, ${snapshat.data!.sys!.country!.toUpperCase()} ',
-                                style: TextStyle(fontSize: 40),
-                              ),
-                              Text(
-                                '${snapshat.data!.tempInfo!.temperature}°F',
-                                style: TextStyle(fontSize: 30),
-                              ),
-                              Text(
-                                  "$Util.getFormattedDate(DateTime.fromMillisecondsSinceEpoch(${snapshat.data!.dt!.toString()}))}"),
-                              Text("${snapshat.data!.weather![0].description}"),
-                              Text(
-                                  "Feels Like: ${snapshat.data!.main!.feelsLike}°F"),
-                              Text(
-                                  "H: ${snapshat.data!.main!.tempMax}°F, L: ${snapshat.data!.main!.tempMin}°F "),
-                              Text(
-                                  "Humidity: ${snapshat.data!.main!.humidity}%"),
-                            ],
-                          );
+                          return buildColumn(snapshat);
                         } else {
                           return Center(child: CircularProgressIndicator());
                         }
@@ -124,6 +104,77 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           ),
         ],
       )),
+    );
+  }
+
+  Column buildColumn(AsyncSnapshot<WeatherData?> snapshat) {
+    var weatherList = snapshat.data!.dt! * 1000;
+    var formatDate = DateTime.fromMillisecondsSinceEpoch(weatherList);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Image.network(snapshat.data!.iconUrl, fit: BoxFit.cover),
+        Text(
+          '${snapshat.data!.name!.toUpperCase()}, ${snapshat.data!.sys!.country!.toUpperCase()} ',
+          style: TextStyle(fontSize: 40),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '${snapshat.data!.main!.temp!.toStringAsFixed(2)} °F',
+              style: TextStyle(fontSize: 20),
+            ),
+            SizedBox(width: 10),
+            Text("${snapshat.data!.weather![0].description!.toUpperCase()}"),
+          ],
+        ),
+        Text(
+          "${Util.getFormattedDate(formatDate)}",
+          style: TextStyle(color: Colors.grey),
+        ),
+        SizedBox(height: 08),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                      "${snapshat.data!.wind!.speed!.toStringAsFixed(1)} mi/h"),
+                  Icon(Icons.speed, size: 20, color: Colors.brown),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("${snapshat.data!.main!.humidity}%"),
+                    Icon(Icons.hdr_weak, size: 20, color: Colors.brown),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        "High: ${snapshat.data!.main!.tempMax!.toStringAsFixed(0)}°F,  Low: ${snapshat.data!.main!.tempMin!.toStringAsFixed(0)}°F  "),
+                    Icon(Icons.whatshot, size: 20, color: Colors.brown),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -169,10 +220,13 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   Widget viewWeather(AsyncSnapshot<ForecastModel?> snapshot) {
     var dailyList = snapshot.data!.daily;
     var currentList = snapshot.data!.current;
+    var formatDate =
+        DateTime.fromMillisecondsSinceEpoch(dailyList![0].dt!.toInt());
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Text("${Util.getFormattedDate(formatDate)}"),
           // Text("Description: ${currentList!.weather![0].description}"),
           // Text("Humidity: ${currentList.humidity.toString()}°F"),
         ],
