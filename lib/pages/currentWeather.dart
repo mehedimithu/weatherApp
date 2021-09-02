@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/forecast/model/forecast_model.dart';
+import 'package:weather_app/forecast/model/weather_model.dart';
 import 'package:weather_app/forecast/network/network.dart';
+import 'package:weather_app/forecast/network/weatherApi.dart';
 import 'package:weather_app/models/model.dart';
 import 'package:weather_app/services/getWeather.dart';
 
@@ -16,7 +18,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   WeatherResponse? _weatherResponse;
 
   Future<ForecastModel?>? _forecast;
-  Future<WeatherResponse?>? _response;
+  Future<WeatherData?>? _response;
 
   double lat = 23.7104;
   double lon = 90.4074;
@@ -25,7 +27,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   void initState() {
     super.initState();
     _forecast = Network().getForecast(lat, lon);
-    _response = DataService().getCurrentWeather("dhaka");
+    _response = WeatherNewtork().getWeather(city: "dhaka");
   }
 
   @override
@@ -58,12 +60,12 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                       Text(_weatherResponse!.weatherInfo.description),
                       Text("Feels Like: ${_weatherResponse!.feelsLike}°F"),
                       Text(
-                          "H: ${_weatherResponse!.high}°F   L: ${_weatherResponse!.low}°F "),
+                          "H: ${_weatherResponse!.high}°F  L: ${_weatherResponse!.low}°F "),
                       Text("Humidity: ${_weatherResponse!.humidity}%"),
                     ],
                   ),
                 Container(
-                  child: FutureBuilder<WeatherResponse?>(
+                  child: FutureBuilder<WeatherData?>(
                     future: _response,
                     builder: (context, snapshat) {
                       if (snapshat.hasData) {
@@ -72,12 +74,12 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                             Image.network(snapshat.data!.iconUrl,
                                 fit: BoxFit.cover),
                             Text(
-                              '${snapshat.data!.cityName.toUpperCase()}',
+                              '${snapshat.data!.name!.toUpperCase()}, ${snapshat.data!.sys!.country!.toUpperCase()} ',
                               style: TextStyle(fontSize: 40),
                             ),
                             Text(
-                              '${snapshat.data!.tempInfo.temperature}°F',
-                              style: TextStyle(fontSize: 40),
+                              '${snapshat.data!.tempInfo!.temperature}°F',
+                              style: TextStyle(fontSize: 30),
                             ),
                           ],
                         );
