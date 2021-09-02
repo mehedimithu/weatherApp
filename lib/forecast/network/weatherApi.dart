@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:weather_app/forecast/model/weather_model.dart';
 
 class WeatherNewtork {
-  Future<WeatherData?> getWeather({required String city}) async {
+  Future<WeatherData?> getWeather({required String cityName}) async {
     final queryParameters = {
-      'q': city,
+      'q': cityName,
       'appid': '032dbc88c111154959aaffb1a0103112',
       'units': 'imperial'
     };
