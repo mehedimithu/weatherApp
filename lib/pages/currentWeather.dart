@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/forecast/model/forecast_model.dart';
-import 'package:weather_app/forecast/model/network/network.dart';
+import 'package:weather_app/forecast/network/network.dart';
 import 'package:weather_app/models/model.dart';
 import 'package:weather_app/services/getWeather.dart';
 
@@ -13,8 +13,10 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   final TextEditingController _mes = TextEditingController();
   final _dataService = DataService();
 
-  WeatherResponse? _response;
+  WeatherResponse? _weatherResponse;
+
   Future<ForecastModel?>? _forecast;
+  Future<WeatherResponse?>? _response;
 
   double lat = 23.7104;
   double lon = 90.4074;
@@ -23,10 +25,8 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   void initState() {
     super.initState();
     _forecast = Network().getForecast(lat, lon);
-    _forecast!.then((weather) => print(weather!.daily));
+    _response = DataService().getCurrentWeather("dhaka");
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -35,60 +35,76 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (_response != null)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+          Expanded(
+            child: ListView(
               children: [
-                Image.network(_response!.iconUrl, fit: BoxFit.cover),
-                Text(
-                  '${_response!.cityName}',
-                  style: TextStyle(fontSize: 40),
+                searchBar(_mes),
+                SizedBox(height: 10),
+                if (_weatherResponse != null)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.network(_weatherResponse!.iconUrl,
+                          fit: BoxFit.cover),
+                      Text(
+                        '${_weatherResponse!.cityName.toUpperCase()}',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      Text(
+                        '${_weatherResponse!.tempInfo.temperature}°F',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      Text(_weatherResponse!.weatherInfo.description),
+                      Text("Feels Like: ${_weatherResponse!.feelsLike}°F"),
+                      Text(
+                          "H: ${_weatherResponse!.high}°F   L: ${_weatherResponse!.low}°F "),
+                      Text("Humidity: ${_weatherResponse!.humidity}%"),
+                    ],
+                  ),
+                Container(
+                  child: FutureBuilder<WeatherResponse?>(
+                    future: _response,
+                    builder: (context, snapshat) {
+                      if (snapshat.hasData) {
+                        return Column(
+                          children: [
+                            Image.network(snapshat.data!.iconUrl,
+                                fit: BoxFit.cover),
+                            Text(
+                              '${snapshat.data!.cityName.toUpperCase()}',
+                              style: TextStyle(fontSize: 40),
+                            ),
+                            Text(
+                              '${snapshat.data!.tempInfo.temperature}°F',
+                              style: TextStyle(fontSize: 40),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  ),
                 ),
-                Text(
-                  '${_response!.tempInfo.temperature}°F',
-                  style: TextStyle(fontSize: 40),
+                Container(
+                  child: FutureBuilder<ForecastModel?>(
+                      future: _forecast,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Column(
+                            children: [
+                              viewWeather(snapshot),
+                            ],
+                          );
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      }),
                 ),
-                Text(_response!.weatherInfo.description),
-                Text("Feels Like: ${_response!.feelsLike}°F"),
-                Text("H: ${_response!.high}°F   L: ${_response!.low}°F "),
-                Text("Humidity: ${_response!.humidity}%"),
               ],
             ),
-          Padding(
-            padding: const EdgeInsets.all(30),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              child: TextField(
-                textAlign: TextAlign.start,
-                controller: _mes,
-                decoration: InputDecoration(
-                  filled: true,
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  hintText: "Enter the city name",
-                ),
-              ),
-            ),
           ),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-                onPrimary: Colors.white,
-                shadowColor: Colors.redAccent,
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
-                minimumSize: Size(150, 40),
-              ),
-              onPressed: _search,
-              child: Text(
-                "Weather",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ))
         ],
       )),
     );
@@ -96,6 +112,48 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
 
   void _search() async {
     final response = await _dataService.getCurrentWeather(_mes.text);
-    setState(() => _response = response);
+    setState(() => _weatherResponse = response);
+  }
+
+  Widget searchBar(_mes) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: TextField(
+          textAlign: TextAlign.start,
+          controller: _mes,
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+              icon: Icon(Icons.search),
+              onPressed: _search,
+            ),
+            filled: true,
+            border: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding: EdgeInsets.all(8),
+            hintText: "Enter the city name",
+          ),
+          onSubmitted: (value) {},
+        ),
+      ),
+    );
+  }
+
+  Widget viewWeather(AsyncSnapshot<ForecastModel?> snapshot) {
+    var dailyList = snapshot.data!.daily;
+    var currentList = snapshot.data!.current;
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Description: ${currentList!.weather![0].description}"),
+          Text("Humidity: ${currentList.humidity.toString()}°F"),
+        ],
+      ),
+    );
   }
 }

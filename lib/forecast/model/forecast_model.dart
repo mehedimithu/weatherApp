@@ -97,12 +97,12 @@ class Current {
     feelsLike = json['feels_like'];
     pressure = json['pressure'];
     humidity = json['humidity'];
-    dewPoint = json['dew_point'];
-    uvi = json['uvi'];
-    clouds = json['clouds'];
-    visibility = json['visibility'];
-    windSpeed = json['wind_speed'];
-    windDeg = json['wind_deg'];
+    dewPoint = json['dew_point'].toDouble();
+    uvi = json['uvi'].toInt();
+    clouds = json['clouds'].toInt();
+    visibility = json['visibility'].toInt();
+    windSpeed = json['wind_speed'].toInt();
+    windDeg = json['wind_deg'].toInt();
     if (json['weather'] != null) {
       weather = [];
       json['weather'].forEach((v) {
@@ -290,12 +290,12 @@ class Temp {
   Temp({this.day, this.min, this.max, this.night, this.eve, this.morn});
 
   Temp.fromJson(Map<String, dynamic> json) {
-    day = json['day'];
-    min = json['min'];
-    max = json['max'];
-    night = json['night'];
-    eve = json['eve'];
-    morn = json['morn'];
+    day = json['day'].toDouble();
+    min = json['min'].toDouble();
+    max = json['max'].toDouble();
+    night = json['night'].toDouble();
+    eve = json['eve'].toDouble();
+    morn = json['morn'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
