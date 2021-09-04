@@ -8,6 +8,7 @@ import 'package:weather_app/forecast/network/network.dart';
 import 'package:weather_app/forecast/network/weatherApi.dart';
 import 'package:weather_app/models/model.dart';
 import 'package:weather_app/services/getWeather.dart';
+import 'package:weather_app/utils/convert_icons.dart';
 import 'package:weather_app/utils/utils.dart';
 
 import 'forecastCard.dart';
@@ -40,7 +41,6 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +49,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
             child: ListView(
               children: [
                 searchBar(_mes),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -101,21 +101,21 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
-        Image.network(
-          "${snapshot.data!.iconUrl}",
-          height: 150,
-          width: MediaQuery.of(context).size.width,
-          fit: BoxFit.contain,
-        ),
-
-        // Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: getWeatherIcons(
-        //       weatherDescription: snapshot.data!.weather![0].main!,
-        //       color: Colors.grey,
-        //       size: 100),
+        //
+        // Image.network(
+        //   "${snapshot.data!.iconUrl}",
+        //   width: MediaQuery.of(context).size.width/2.5,
+        //   height: 140,
+        //   fit: BoxFit.fill,
         // ),
+
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: getWeatherIcons(
+              weatherDescription: snapshot.data!.weather![0].main!,
+              color: Colors.grey.shade400,
+              size: 100),
+        ),
 
         Text(
           '${snapshot.data!.name!.toUpperCase()}, ${snapshot.data!.sys!.country!.toUpperCase()} ',
@@ -205,7 +205,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           textAlign: TextAlign.start,
           controller: _mes,
           decoration: InputDecoration(
-            // suffixIcon: IconButton(icon: Icon(Icons.search), onPressed: () {}),
+            suffixIcon: IconButton(icon: Icon(Icons.search), onPressed: () {}),
             filled: true,
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -218,8 +218,6 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           onSubmitted: (value) {
             setState(() {
               _city = value;
-              // lat = double.parse(value);
-              // lon = double.parse(value);
               getWeatherData(cityName: _city);
             });
           },
