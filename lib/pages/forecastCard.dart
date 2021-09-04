@@ -32,7 +32,7 @@ Widget forecastCard(AsyncSnapshot<ForcastModel?> snapshot, int index) {
               backgroundColor: Colors.transparent,
               child: getWeatherIcons(
                   weatherDescription:
-                      "${snapshot.data!.hourly![index].weather![0].main}",
+                      "${snapshot.data!.daily![index].weather![0].main}",
                   color: Colors.grey,
                   size: 40),
             ),
@@ -43,13 +43,11 @@ Widget forecastCard(AsyncSnapshot<ForcastModel?> snapshot, int index) {
                 Column(
                   children: [
                     Text(
-                        "${snapshot.data!.hourly![index].feelsLike!.toStringAsFixed(1)}°F"),
+                        "${snapshot.data!.daily![index].feelsLike!.night!.toStringAsFixed(0)}°F"),
                     Text(
-                        "${snapshot.data!.hourly![index].humidity!.toStringAsFixed(1)}%"),
+                        "${snapshot.data!.daily![index].humidity!.toStringAsFixed(1)}%"),
                     Text(
-                      "${snapshot.data!.hourly![index].temp!.toStringAsFixed(1)}°F",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      "${snapshot.data!.daily![index].temp!.max!.toStringAsFixed(1)}°F",
                     ),
                   ],
                 ),
