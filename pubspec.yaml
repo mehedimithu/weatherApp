@@ -37,6 +37,7 @@ dependencies:
   meta:
   conveter:
   font_awesome_flutter: ^9.1.0
+  geolocator: ^7.6.0
 
 dev_dependencies:
   flutter_test:
