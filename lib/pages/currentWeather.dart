@@ -6,7 +6,9 @@ import 'package:weather_app/forecast/model/forecast_model.dart';
 import 'package:weather_app/forecast/model/weather_model.dart';
 import 'package:weather_app/forecast/network/network.dart';
 import 'package:weather_app/forecast/network/weatherApi.dart';
+import 'package:weather_app/models/locations.dart';
 import 'package:weather_app/models/model.dart';
+import 'package:weather_app/pages/getLocation.dart';
 import 'package:weather_app/services/getWeather.dart';
 import 'package:weather_app/utils/convert_icons.dart';
 import 'package:weather_app/utils/utils.dart';
@@ -22,6 +24,11 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   final TextEditingController _mes = TextEditingController();
   final _dataService = DataService();
 
+  void getLocations() async {
+    Location location = Location();
+    await location.getCurrentLocation();
+  }
+
   WeatherResponse? _weatherResponse;
 
   Future<ForcastModel?>? _forecast;
@@ -34,6 +41,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   @override
   void initState() {
     super.initState();
+
     _forecast = Network().getForecast(lat, lon);
     _response = getWeatherData(cityName: _city);
   }

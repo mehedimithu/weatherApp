@@ -1,16 +1,17 @@
+import 'package:geolocator/geolocator.dart';
 
 class Location {
-  final double? longitude;
-  final double? latitude;
+  double? longitude;
+  double? latitude;
 
-  Location({
-    this.longitude,
-    this.latitude,
-  });
-
-  static Location fromJson(dynamic json) {
-    return Location(
-        longitude: json['coord']['lon'].toDouble(),
-        latitude: json['coord']['lat'].toDouble());
+  Future<void> getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low);
+      latitude = position.latitude;
+      longitude = position.longitude;
+    } catch (e) {
+      print(e);
+    }
   }
 }
