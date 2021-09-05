@@ -1,17 +1,15 @@
 import 'dart:convert';
-import 'package:weather_app/forecast/model/forecastData.dart';
 import 'package:weather_app/forecast/model/forecast_model.dart';
 
 import 'package:http/http.dart' as http;
 
 class Network {
-  Future<ForcastModel?>? getForecast(double lat, double lon) async {
+  Future<ForcastModel?>? getForecast(
+      {required double lat, required double lon}) async {
     final queryParameters = {
-      // 'q': 'Dhaka,BD',
-      // 'cnt': '40',
       'lat': lat.toString(),
       'lon': lon.toString(),
-      // 'exclude': 'hourly',
+      // 'exclude': 'minutely',
       'appid': '032dbc88c111154959aaffb1a0103112',
       'units': 'imperial'
     };

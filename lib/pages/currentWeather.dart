@@ -8,7 +8,6 @@ import 'package:weather_app/forecast/network/network.dart';
 import 'package:weather_app/forecast/network/weatherApi.dart';
 import 'package:weather_app/models/locations.dart';
 import 'package:weather_app/models/model.dart';
-import 'package:weather_app/pages/getLocation.dart';
 import 'package:weather_app/services/getWeather.dart';
 import 'package:weather_app/utils/convert_icons.dart';
 import 'package:weather_app/utils/utils.dart';
@@ -24,9 +23,22 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   final TextEditingController _mes = TextEditingController();
   final _dataService = DataService();
 
+  double? latitude;
+  double? longitude;
+
+  @override
+  void initState() {
+    super.initState();
+    getLocations();
+    _response = getWeatherData(cityName: _city);
+  }
+
   void getLocations() async {
     Location location = Location();
     await location.getCurrentLocation();
+    latitude = location.latitude;
+    longitude = location.longitude;
+    getLocationData(lat: latitude!, lon: longitude!);
   }
 
   WeatherResponse? _weatherResponse;
@@ -34,17 +46,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   Future<ForcastModel?>? _forecast;
   Future<WeatherData?>? _response;
 
-  double lat = 23.7104;
-  double lon = 90.4074;
   String _city = "dhaka";
-
-  @override
-  void initState() {
-    super.initState();
-
-    _forecast = Network().getForecast(lat, lon);
-    _response = getWeatherData(cityName: _city);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,13 +69,19 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                         if (snapshot.hasData) {
                           return buildColumn(snapshot);
                         } else {
-                          return Center(child: Text("Search the city name"));
+                          return Center(
+                            child: Text(
+                              "Search by the city name",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          );
                         }
                       },
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 13),
                 Container(
                   child: FutureBuilder<ForcastModel?>(
                       future: _forecast,
@@ -88,7 +96,12 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
                           return Container(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Text("data not found!"),
+                              child: Center(
+                                child: CircularProgressIndicator.adaptive(
+                                  backgroundColor: Colors.red,
+                                  strokeWidth: 4,
+                                ),
+                              ),
                             ),
                           );
                         }
@@ -109,21 +122,20 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        //
-        // Image.network(
-        //   "${snapshot.data!.iconUrl}",
-        //   width: MediaQuery.of(context).size.width/2.5,
-        //   height: 140,
-        //   fit: BoxFit.fill,
-        // ),
-
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: getWeatherIcons(
-              weatherDescription: snapshot.data!.weather![0].main!,
-              color: Colors.grey.shade400,
-              size: 100),
+        Image.network(
+          "${snapshot.data!.iconUrl}",
+          width: MediaQuery.of(context).size.width / 2.5,
+          height: 140,
+          fit: BoxFit.fill,
         ),
+
+        // Padding(
+        //   padding: const EdgeInsets.all(8.0),
+        //   child: getWeatherIcons(
+        //       weatherDescription: snapshot.data!.weather![0].main!,
+        //       color: Colors.grey.shade400,
+        //       size: 100),
+        // ),
 
         Text(
           '${snapshot.data!.name!.toUpperCase()}, ${snapshot.data!.sys!.country!.toUpperCase()} ',
@@ -238,13 +250,18 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     _response = WeatherNewtork().getWeather(cityName: _city);
   }
 
+  Future<ForcastModel?>? getLocationData(
+      {required double lat, required double lon}) {
+    _forecast = Network().getForecast(lat: latitude!, lon: longitude!);
+  }
+
   Widget viewWeather(AsyncSnapshot<ForcastModel?> snapshot) {
     var dataList = snapshot.data!.daily;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "7 Days Forecast of dhaka".toUpperCase(),
+          "7 Days Forecast Data".toUpperCase(),
           style: TextStyle(fontSize: 14),
         ),
         Container(

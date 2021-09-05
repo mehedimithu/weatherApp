@@ -256,7 +256,7 @@ class Daily {
     weather: List<Weather>.from(json["weather"].map((x) => Weather.fromJson(x))),
     clouds: json["clouds"],
     pop: json["pop"].toDouble(),
-    rain: json["rain"].toDouble(),
+    rain: json["rain"],
     uvi: json["uvi"].toDouble(),
   );
 

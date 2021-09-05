@@ -12,7 +12,6 @@ Widget forecastCard(AsyncSnapshot<ForcastModel?> snapshot, int index) {
   var fullDate = Util.getFormattedDate(
       DateTime.fromMillisecondsSinceEpoch(dataList![index].dt! * 1000));
   var dayOfWeek = "";
-  var sunRize = "";
 
   dayOfWeek = fullDate!.split(",")[0]; //[Saturday, Set 1, 2021]
 
@@ -33,8 +32,8 @@ Widget forecastCard(AsyncSnapshot<ForcastModel?> snapshot, int index) {
               child: getWeatherIcons(
                   weatherDescription:
                       "${snapshot.data!.daily![index].weather![0].main}",
-                  color: Colors.grey,
-                  size: 40),
+                  color: Colors.white,
+                  size: 50),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
